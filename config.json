@@ -1,0 +1,5 @@
+{
+    "network": "devnet",
+    "seedPath": "tmp/seed",
+    "databasePath": "tmp/db"
+}
