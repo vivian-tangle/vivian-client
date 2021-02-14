@@ -37,8 +37,9 @@ func (ac *Account) GetSeed() bool {
 			seedContent, err = exec.Command("bash", "-c", newSeedCommand).Output()
 			tools.HandleErr(err)
 			fmt.Printf("Your new seed is: %s\n", seedContent)
-			fmt.Println("Press Y to confirm, press the other key to generate again.")
+			fmt.Print("Press Y to confirm, press the other key to generate again.")
 			key, _ := reader.ReadString('\n')
+			fmt.Println()
 			if key == "Y\n" || key == "y\n" {
 				break
 			}

@@ -11,7 +11,7 @@ func main() {
 	fmt.Println("Hello world!")
 	c := config.Config{}
 	c.LoadConfig()
-	ac := account.Account{Seed: "", Config: c}
+	ac := account.Account{Seed: "", Config: &c}
 	// ac.GetSeed()
 	// ac.HelloWorldTx()
 	ac.ReadTxTagMsg("LGKZQJGPLRGRQQAQTVIWSRNBBUWNQBHGGCHQJNRPVPNBWXQXGFPSFMJKKFTIQCARNDEJI9FGDGSWVA999")
