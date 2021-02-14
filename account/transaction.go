@@ -6,6 +6,7 @@ import (
 	iotaAPI "github.com/iotaledger/iota.go/api"
 	"github.com/iotaledger/iota.go/bundle"
 	"github.com/iotaledger/iota.go/converter"
+	"github.com/iotaledger/iota.go/transaction"
 	"github.com/vivian-tangle/vivian-client/tools"
 )
 
@@ -36,28 +37,90 @@ func (ac *Account) MakeNewAddressOptions() iotaAPI.GetNewAddressOptions {
 
 // HelloWorldTx sends a "Hello World" transaction
 func (ac *Account) HelloWorldTx() {
-	// Connect to a node
+	// Load configurations
 	node := ac.Config.Node
+	depth := ac.Config.Depth
+	minimumWeightMagnitude := ac.Config.MinimumWeightMagnitude
+
+	// Connect to a node
 	api, err := iotaAPI.ComposeAPI(iotaAPI.HTTPClientSettings{URI: node})
 	tools.HandleErr(err)
+
 	address := ac.GetNewAddress(api)
 	var data = "{'message' : 'Hello world'}"
+	tag, err := converter.ASCIIToTrytes("HELLO")
 	message, err := converter.ASCIIToTrytes(data)
 	tools.HandleErr(err)
+
 	transfers := bundle.Transfers{
 		{
 			Address: address[0],
 			Value:   0,
+			Tag:     tag,
 			Message: message,
 		},
 	}
+
 	trytes, err := api.PrepareTransfers(ac.Seed, transfers, iotaAPI.PrepareTransfersOptions{})
 	tools.HandleErr(err)
 
-	depth := ac.Config.Depth
-	minimumWeightMagnitude := ac.Config.MinimumWeightMagnitude
 	myBundle, err := api.SendTrytes(trytes, depth, minimumWeightMagnitude)
 	tools.HandleErr(err)
 
-	fmt.Println(bundle.TailTransactionHash(myBundle))
+	fmt.Printf("Transaction sent with tail tx hash:\n%s\n", bundle.TailTransactionHash(myBundle))
+}
+
+// ZeroValueTx sends a zero value transaction for conveying the message
+func (ac *Account) ZeroValueTx(message, tag string) {
+	// Load configurations
+	node := ac.Config.Node
+	depth := ac.Config.Depth
+	minimumWeightMagnitude := ac.Config.MinimumWeightMagnitude
+
+	// Connect to a node
+	api, err := iotaAPI.ComposeAPI(iotaAPI.HTTPClientSettings{URI: node})
+	tools.HandleErr(err)
+
+	address := ac.GetNewAddress(api)
+	messageTrytes, err := converter.ASCIIToTrytes(message)
+	tools.HandleErr(err)
+	tagTrytes, err := converter.ASCIIToTrytes(tag)
+	tools.HandleErr(err)
+
+	transfers := bundle.Transfers{
+		{
+			Address: address[0],
+			Value:   0,
+			Tag:     tagTrytes,
+			Message: messageTrytes,
+		},
+	}
+
+	trytes, err := api.PrepareTransfers(ac.Seed, transfers, iotaAPI.PrepareTransfersOptions{})
+	tools.HandleErr(err)
+
+	myBundle, err := api.SendTrytes(trytes, depth, minimumWeightMagnitude)
+	tools.HandleErr(err)
+
+	fmt.Printf("Transaction sent with tail tx hash:\n%s\n", bundle.TailTransactionHash(myBundle))
+}
+
+// ReadTxTagMsg reads the transaction tag and message by tail transaction hash
+func (ac *Account) ReadTxTagMsg(tailTxHash string) (string, string) {
+	// load configurations
+	node := ac.Config.Node
+
+	// Connect to a node
+	api, err := iotaAPI.ComposeAPI(iotaAPI.HTTPClientSettings{URI: node})
+	tools.HandleErr(err)
+
+	bundle, err := api.GetBundle(tailTxHash)
+	tools.HandleErr(err)
+
+	jsonMsg, err := transaction.ExtractJSON(bundle)
+	tools.HandleErr(err)
+
+	fmt.Println(bundle[0].Tag)
+	fmt.Println(jsonMsg)
+	return bundle[0].Tag, jsonMsg
 }
