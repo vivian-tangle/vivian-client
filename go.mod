@@ -4,6 +4,8 @@ go 1.15
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8 // indirect
+	github.com/bwesterb/go-ristretto v1.1.1
+	github.com/dgraph-io/badger v1.5.4
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
 	github.com/iotaledger/iota.go v1.0.0-beta.15

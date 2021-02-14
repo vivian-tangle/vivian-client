@@ -18,7 +18,7 @@ const (
 
 // PreorderName sends the transaction for preordering a name
 func (d *Domain) PreorderName(name string) error {
-	return nil
+	
 }
 
 // RegisterName sends the transaction for registering a name
