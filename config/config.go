@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 )
 
 var (
@@ -14,21 +15,38 @@ var (
 	DefaultSeedPath = "seeds"
 	// DefaultDatabasePath is directory for storing database files
 	DefaultDatabasePath = "db"
-	configDir           = "config.json"
+	// DefaultNode is the default node for connecting to IOTA network
+	DefaultNode = "https://nodes.devnet.iota.org"
+	// DefaultSecurityLevel is the default security level you want to use for your address
+	DefaultSecurityLevel = "2"
+	// DefaultDepth is the default depth of IOTA network
+	DefaultDepth = "3"
+	// DefaultMinimumWeightMagnitude is the default minimum magnitude of IOTA network
+	DefaultMinimumWeightMagnitude = "9"
+	configDir                     = "config.json"
 )
 
 // Config is the struct for storing config parameters
 type Config struct {
-	Network      string
-	SeedPath     string
-	DatabasePath string
+	Network                string
+	SeedPath               string
+	DatabasePath           string
+	Node                   string
+	SecurityLevel          int
+	Depth                  uint64
+	MinimumWeightMagnitude uint64
 }
 
 // LoadConfig loads the configures from default config json
 func (c *Config) LoadConfig() {
+	// Load default configurations
 	c.Network = DefaultNetwork
 	c.SeedPath = DefaultSeedPath
 	c.DatabasePath = DefaultDatabasePath
+	c.Node = DefaultNode
+	c.SecurityLevel, _ = strconv.Atoi(DefaultSecurityLevel)
+	c.Depth, _ = strconv.ParseUint(DefaultDepth, 0, 64)
+	c.MinimumWeightMagnitude, _ = strconv.ParseUint(DefaultMinimumWeightMagnitude, 0, 64)
 
 	configJSON, err := os.Open(configDir)
 	if err != nil {
@@ -50,6 +68,18 @@ func (c *Config) LoadConfig() {
 	}
 	if val, ok := data["databasePath"]; ok {
 		c.DatabasePath = val
+	}
+	if val, ok := data["node"]; ok {
+		c.Node = val
+	}
+	if val, ok := data["securityLevel"]; ok {
+		c.SecurityLevel, _ = strconv.Atoi(val)
+	}
+	if val, ok := data["depth"]; ok {
+		c.Depth, _ = strconv.ParseUint(val, 0, 64)
+	}
+	if val, ok := data["minimumWeightMagnitude"]; ok {
+		c.MinimumWeightMagnitude, _ = strconv.ParseUint(val, 0, 64)
 	}
 
 	fmt.Println("Configuration loaded")

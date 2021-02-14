@@ -11,6 +11,7 @@ func main() {
 	fmt.Println("Hello world!")
 	c := config.Config{}
 	c.LoadConfig()
-	ac := account.Account{}
-	ac.GetSeed(c)
+	ac := account.Account{Seed: "", Config: c}
+	ac.GetSeed()
+	ac.HelloWorldTx()
 }

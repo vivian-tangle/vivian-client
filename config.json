@@ -1,5 +1,9 @@
 {
     "network": "devnet",
     "seedPath": "tmp/seed",
-    "databasePath": "tmp/db"
+    "databasePath": "tmp/db",
+    "node": "https://nodes.devnet.iota.org",
+    "securityLevel": "2",
+    "depth": "3",
+    "minimumWeightMagnitude": "9"
 }
