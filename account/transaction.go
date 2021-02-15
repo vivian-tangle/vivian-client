@@ -71,7 +71,7 @@ func (ac *Account) HelloWorldTx() {
 }
 
 // ZeroValueTx sends a zero value transaction for conveying the message
-func (ac *Account) ZeroValueTx(message, tag string) {
+func (ac *Account) ZeroValueTx(message, tag string) error {
 	// Load configurations
 	node := ac.Config.Node
 	depth := ac.Config.Depth
@@ -79,13 +79,19 @@ func (ac *Account) ZeroValueTx(message, tag string) {
 
 	// Connect to a node
 	api, err := iotaAPI.ComposeAPI(iotaAPI.HTTPClientSettings{URI: node})
-	tools.HandleErr(err)
+	if err != nil {
+		return err
+	}
 
 	address := ac.GetNewAddress(api)
 	messageTrytes, err := converter.ASCIIToTrytes(message)
-	tools.HandleErr(err)
+	if err != nil {
+		return err
+	}
 	tagTrytes, err := converter.ASCIIToTrytes(tag)
-	tools.HandleErr(err)
+	if err != nil {
+		return err
+	}
 
 	transfers := bundle.Transfers{
 		{
@@ -97,12 +103,18 @@ func (ac *Account) ZeroValueTx(message, tag string) {
 	}
 
 	trytes, err := api.PrepareTransfers(ac.Seed, transfers, iotaAPI.PrepareTransfersOptions{})
-	tools.HandleErr(err)
+	if err != nil {
+		return err
+	}
 
 	myBundle, err := api.SendTrytes(trytes, depth, minimumWeightMagnitude)
-	tools.HandleErr(err)
+	if err != nil {
+		return err
+	}
 
 	fmt.Printf("Transaction sent with tail tx hash:\n%s\n", bundle.TailTransactionHash(myBundle))
+
+	return nil
 }
 
 // ReadTxTagMsg reads the transaction tag and message by tail transaction hash

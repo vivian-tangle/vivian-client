@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"bytes"
+	"encoding/gob"
 	"encoding/hex"
 	"math/big"
 
@@ -115,4 +117,38 @@ func OpenByString(commitString, gString, hString, rString string, secret []byte)
 
 	commit := Commit(g, h, secret, r)
 	return verifyCommit.Equals(&commit)
+}
+
+// PedersonCommit is the struct for storing the results of Pederson commitment
+type PedersonCommit struct {
+	Content string
+	G       string
+	H       string
+	R       string
+	Commit  string
+}
+
+// Serialize PedersonCommit structure into bytes
+func (pc *PedersonCommit) Serialize() []byte {
+	var res bytes.Buffer
+	encoder := gob.NewEncoder(&res)
+
+	err := encoder.Encode(pc)
+
+	HandleErr(err)
+
+	return res.Bytes()
+}
+
+// Deserialize bytes into PedersonCommit structure
+func (pc *PedersonCommit) Deserialize(data []byte) *PedersonCommit {
+	var pedersonCommit PedersonCommit
+
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+
+	err := decoder.Decode(&pedersonCommit)
+
+	HandleErr(err)
+
+	return &pedersonCommit
 }
