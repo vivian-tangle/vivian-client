@@ -14,7 +14,8 @@ func main() {
 	c.LoadConfig()
 	ac := account.Account{Seed: "", Config: &c}
 	ac.GetSeed()
-	ac.HelloWorldTx()
+	// ac.HelloWorldTx()
+	// ac.ZeroValueTx("Hello world", domain.TagPreorder)
 	// ac.ReadTxTagMsg("LGKZQJGPLRGRQQAQTVIWSRNBBUWNQBHGGCHQJNRPVPNBWXQXGFPSFMJKKFTIQCARNDEJI9FGDGSWVA999")
 	dm := domain.Domain{Config: &c, Account: &ac}
 	err := dm.PreorderName("vivian.vi")

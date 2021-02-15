@@ -12,6 +12,7 @@ import (
 
 const (
 	tagSuffix = "99999999999999999999999"
+
 	// TagPreorderTrytes is the trytes for pre-order tag
 	TagPreorderTrytes = "ZBYB" + tagSuffix
 	// TagRegisterTrytes is the trytes for register tag
@@ -24,10 +25,24 @@ const (
 	TagTransferTrytes = "CCPB" + tagSuffix
 	// TagRevokeTrytes is the trytes for revoke tag
 	TagRevokeTrytes = "ACEC" + tagSuffix
+
+	// TagPreorder is the tag for pre-ordering the domain
+	TagPreorder = "PO"
+	// TagRegister is the tag for registering the domain
+	TagRegister = "RG"
+	// TagRenew is the tag for renewing the domain
+	TagRenew = "RN"
+	// TagUpdate is the tag for updating the domain
+	TagUpdate = "UD"
+	// TagTransfer is the tag for transfering the domain
+	TagTransfer = "TF"
+	// TagRevoke is the tag for revoking the domain
+	TagRevoke = "RV"
 )
 
 // PreorderName sends the transaction for preordering a name
 func (d *Domain) PreorderName(name string) error {
+	fmt.Printf("Preordering name: %s\n", name)
 	// Pederson commitment
 	g, h := tools.GenerateParametersToString()
 	r := tools.GenerateRandomToString()
@@ -35,8 +50,9 @@ func (d *Domain) PreorderName(name string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Pederson commitment: %s\n", commit)
 
-	err = d.Account.ZeroValueTx(commit, TagPreorderTrytes)
+	txHash, err := d.Account.ZeroValueTx(commit, TagPreorder)
 	if err != nil {
 		return err
 	}
@@ -47,6 +63,7 @@ func (d *Domain) PreorderName(name string) error {
 		H:       h,
 		R:       r,
 		Commit:  commit,
+		TxHash:  txHash,
 	}
 
 	_, err = os.Stat(d.Config.DatabasePath)

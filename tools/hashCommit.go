@@ -126,6 +126,7 @@ type PedersonCommit struct {
 	H       string
 	R       string
 	Commit  string
+	TxHash  string
 }
 
 // Serialize PedersonCommit structure into bytes

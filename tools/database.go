@@ -30,7 +30,7 @@ func OpenDB(dir string, opts badger.Options) (*badger.DB, error) {
 				log.Println("database unlocked, value log truncated")
 				return db, nil
 			}
-			log.Println("could not unlock database:", err)
+			log.Println("could not unlock database: ", err)
 		}
 		return nil, err
 	}
