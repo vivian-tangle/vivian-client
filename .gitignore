@@ -1,0 +1,5 @@
+.vscode/
+vendor/
+tmp/
+vivian
+vivian-client
