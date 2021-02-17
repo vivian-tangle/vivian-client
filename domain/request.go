@@ -92,8 +92,8 @@ func (d *Domain) PreorderName(name string) error {
 	if err != nil {
 		return err
 	}
-	return nil
 
+	return nil
 }
 
 // RegisterName sends the transaction for registering a name
