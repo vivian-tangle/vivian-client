@@ -18,6 +18,12 @@ func main() {
 	// ac.ZeroValueTx("Hello world", domain.TagPreorder)
 	// ac.ReadTxTagMsg("LGKZQJGPLRGRQQAQTVIWSRNBBUWNQBHGGCHQJNRPVPNBWXQXGFPSFMJKKFTIQCARNDEJI9FGDGSWVA999")
 	dm := domain.Domain{Config: &c, Account: &ac}
-	err := dm.PreorderName("vivian.vi")
-	fmt.Println(err)
+	// err := dm.PreorderName("vivian.vi")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	err := dm.RegisterName("vivian.vi", "Hello Vivian!")
+	if err != nil {
+		panic(err)
+	}
 }
