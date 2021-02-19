@@ -154,7 +154,39 @@ func (d *Domain) RegisterName(name, value string) error {
 	msg := encodeRegisterJSON(preorderInfo.Deserialize(preorderInfoByte), name, value)
 	fmt.Println(msg)
 
-	_, err = d.Account.ZeroValueTx(msg, TagRegister)
+	txHash, err := d.Account.ZeroValueTx(msg, TagRegister)
+	if err != nil {
+		return err
+	}
+
+	// Append the information of the domain name to the badger DB of pending domain names
+	pendingDBPath := filepath.Join(d.Config.DatabasePath, PendingDatabaseName)
+	pendingDBOpts := badger.DefaultOptions(pendingDBPath)
+	pendingDBOpts.Logger = nil // disable the message from badger log
+
+	pendingDB, err := tools.OpenDB(pendingDBPath, pendingDBOpts)
+	if err != nil {
+		return err
+	}
+	defer pendingDB.Close()
+
+	pendingDomainName := tools.PendingDomainName{
+		Name:      name,
+		Value:     value,
+		RegTxHash: txHash,
+	}
+
+	err = pendingDB.Update(func(txn *badger.Txn) error {
+		_, err := txn.Get([]byte(name))
+		if err != nil {
+			if err == badger.ErrKeyNotFound {
+				err = txn.Set([]byte(name), pendingDomainName.Serialize())
+			}
+			return err
+		}
+		errMsg := fmt.Sprintf("Domain name: %s is already pending.", name)
+		return errors.New(errMsg)
+	})
 
 	return err
 }
