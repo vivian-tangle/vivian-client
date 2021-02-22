@@ -6,14 +6,18 @@ require (
 	github.com/OneOfOne/xxhash v1.2.8 // indirect
 	github.com/bwesterb/go-ristretto v1.1.1
 	github.com/dgraph-io/badger v1.6.2
+	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.4 // indirect
+	github.com/google/uuid v1.1.1
 	github.com/iotaledger/iota.go v1.0.0-beta.15
 	github.com/kr/text v0.2.0 // indirect
+	github.com/libp2p/go-libp2p v0.13.0
+	github.com/libp2p/go-libp2p-core v0.8.5
+	github.com/multiformats/go-multiaddr v0.3.1
 	github.com/nxadm/tail v1.4.8 // indirect
 	github.com/onsi/ginkgo v1.15.0 // indirect
 	github.com/onsi/gomega v1.10.5 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect

@@ -23,7 +23,13 @@ var (
 	DefaultDepth = "3"
 	// DefaultMinimumWeightMagnitude is the default minimum magnitude of IOTA network
 	DefaultMinimumWeightMagnitude = "9"
-	configDir                     = "config.json"
+	// DefaultNodeClientVersion is the default node client version for lib-p2p network
+	DefaultNodeClientVersion = "go-p2p-node/0.0.1"
+	// DefaultPingRequestVersion is the default ping request version for lib-p2p network
+	DefaultPingRequestVersion = "/ping/pingreq/0.0.1"
+	// DefaultPingResponseVersion is the default ping response version for lip-p2p network
+	DefaultPingResponseVersion = "/ping/pingresp/0.0.1"
+	configDir                  = "config.json"
 )
 
 // Config is the struct for storing config parameters
@@ -35,6 +41,9 @@ type Config struct {
 	SecurityLevel          int
 	Depth                  uint64
 	MinimumWeightMagnitude uint64
+	NodeClientVersion      string
+	PingRequestVersion     string
+	PingResponseVersion    string
 }
 
 // LoadConfig loads the configures from default config json
@@ -47,6 +56,9 @@ func (c *Config) LoadConfig() {
 	c.SecurityLevel, _ = strconv.Atoi(DefaultSecurityLevel)
 	c.Depth, _ = strconv.ParseUint(DefaultDepth, 0, 64)
 	c.MinimumWeightMagnitude, _ = strconv.ParseUint(DefaultMinimumWeightMagnitude, 0, 64)
+	c.NodeClientVersion = DefaultNodeClientVersion
+	c.PingRequestVersion = DefaultPingRequestVersion
+	c.PingResponseVersion = DefaultPingResponseVersion
 
 	configJSON, err := os.Open(configDir)
 	if err != nil {
@@ -80,6 +92,15 @@ func (c *Config) LoadConfig() {
 	}
 	if val, ok := data["minimumWeightMagnitude"]; ok {
 		c.MinimumWeightMagnitude, _ = strconv.ParseUint(val, 0, 64)
+	}
+	if val, ok := data["nodeClientVersion"]; ok {
+		c.NodeClientVersion = val
+	}
+	if val, ok := data["pingRequestVersion"]; ok {
+		c.PingRequestVersion = val
+	}
+	if val, ok := data["pingResponseVersion"]; ok {
+		c.PingResponseVersion = val
 	}
 
 	fmt.Println("Configuration loaded")

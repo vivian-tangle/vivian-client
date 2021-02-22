@@ -38,7 +38,6 @@ func OpenDB(dir string, opts badger.Options) (*badger.DB, error) {
 	}
 
 	return db, nil
-
 }
 
 func retry(dir string, originalOpts badger.Options) (*badger.DB, error) {
