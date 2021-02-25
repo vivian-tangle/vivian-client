@@ -1,6 +1,8 @@
 package tools
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"log"
 	"os"
@@ -36,7 +38,6 @@ func OpenDB(dir string, opts badger.Options) (*badger.DB, error) {
 	}
 
 	return db, nil
-
 }
 
 func retry(dir string, originalOpts badger.Options) (*badger.DB, error) {
@@ -47,6 +48,63 @@ func retry(dir string, originalOpts badger.Options) (*badger.DB, error) {
 	retryOpts := originalOpts
 	retryOpts.Truncate = true
 	db, err := badger.Open(retryOpts)
-	
+
 	return db, err
+}
+
+// Serialize PedersonCommit structure into bytes
+func (pc *PedersonCommit) Serialize() []byte {
+	var res bytes.Buffer
+	encoder := gob.NewEncoder(&res)
+
+	err := encoder.Encode(pc)
+
+	HandleErr(err)
+
+	return res.Bytes()
+}
+
+// Deserialize bytes into PedersonCommit structure
+func (pc *PedersonCommit) Deserialize(data []byte) *PedersonCommit {
+	var pedersonCommit PedersonCommit
+
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+
+	err := decoder.Decode(&pedersonCommit)
+
+	HandleErr(err)
+
+	return &pedersonCommit
+}
+
+// PendingDomainName is the data structure for storing the information of a pending domain name
+type PendingDomainName struct {
+	Name      string
+	Value     string
+	RegTxHash string
+}
+
+// Serialize PendingDomainName structure into bytes
+func (pdn *PendingDomainName) Serialize() []byte {
+	var res bytes.Buffer
+	encoder := gob.NewEncoder(&res)
+
+	err := encoder.Encode(pdn)
+
+	HandleErr(err)
+
+	return res.Bytes()
+}
+
+// Deserialize bytes into PendingDomainName structure
+func (pdn *PendingDomainName) Deserialize(data []byte) *PendingDomainName {
+	var pendingDomainName PendingDomainName
+
+	decoder := gob.NewDecoder(bytes.NewReader(data))
+
+	err := decoder.Decode(&pendingDomainName)
+
+	HandleErr(err)
+
+	return &pendingDomainName
 }

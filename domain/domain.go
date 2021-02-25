@@ -9,6 +9,8 @@ import (
 const (
 	// ReservedDatabaseName is the name of the badger DB of reserved domain names
 	ReservedDatabaseName = "rv"
+	// PendingDatabaseName is the name of the badfer DB of pending domain names
+	PendingDatabaseName = "pd"
 	// RegisteredDatabaseName is the name of the badger DB of registered domain names
 	RegisteredDatabaseName = "rs"
 )

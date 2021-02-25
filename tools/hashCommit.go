@@ -1,8 +1,6 @@
 package tools
 
 import (
-	"bytes"
-	"encoding/gob"
 	"encoding/hex"
 	"math/big"
 
@@ -127,29 +125,4 @@ type PedersonCommit struct {
 	R       string
 	Commit  string
 	TxHash  string
-}
-
-// Serialize PedersonCommit structure into bytes
-func (pc *PedersonCommit) Serialize() []byte {
-	var res bytes.Buffer
-	encoder := gob.NewEncoder(&res)
-
-	err := encoder.Encode(pc)
-
-	HandleErr(err)
-
-	return res.Bytes()
-}
-
-// Deserialize bytes into PedersonCommit structure
-func (pc *PedersonCommit) Deserialize(data []byte) *PedersonCommit {
-	var pedersonCommit PedersonCommit
-
-	decoder := gob.NewDecoder(bytes.NewReader(data))
-
-	err := decoder.Decode(&pedersonCommit)
-
-	HandleErr(err)
-
-	return &pedersonCommit
 }

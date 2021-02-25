@@ -5,5 +5,8 @@
     "node": "https://nodes.devnet.iota.org",
     "securityLevel": "2",
     "depth": "3",
-    "minimumWeightMagnitude": "9"
+    "minimumWeightMagnitude": "9",
+    "nodeClientVersion": "go-p2p-node/0.0.1",
+    "pingRequestVersion": "/ping/pingreq/0.0.1",
+    "pingResponseVersion": "/ping/pingresp/0.0.1"
 }

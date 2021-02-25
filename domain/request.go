@@ -42,6 +42,37 @@ const (
 
 // PreorderName sends the transaction for preordering a name
 func (d *Domain) PreorderName(name string) error {
+	// Open the database
+	_, err := os.Stat(d.Config.DatabasePath)
+	if os.IsNotExist(err) {
+		os.MkdirAll(d.Config.DatabasePath, os.ModePerm)
+	}
+	reserveDBPath := filepath.Join(d.Config.DatabasePath, ReservedDatabaseName)
+	opts := badger.DefaultOptions(reserveDBPath)
+	opts.Logger = nil // disable the message from badger log
+
+	db, err := tools.OpenDB(reserveDBPath, opts)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	// Check if the domain name is already pre-ordered
+	err = db.Update(func(txn *badger.Txn) error {
+		_, err := txn.Get([]byte(name))
+		if err != nil {
+			if err == badger.ErrKeyNotFound {
+				return nil
+			}
+			return err
+		}
+		errMsg := fmt.Sprintf("Name: %s already reserved!", name)
+		return errors.New(errMsg)
+	})
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("Preordering name: %s\n", name)
 	// Pederson commitment
 	g, h := tools.GenerateParametersToString()
@@ -66,38 +97,99 @@ func (d *Domain) PreorderName(name string) error {
 		TxHash:  txHash,
 	}
 
-	_, err = os.Stat(d.Config.DatabasePath)
-	if os.IsNotExist(err) {
-		os.MkdirAll(d.Config.DatabasePath, os.ModePerm)
-	}
-	reserveDBPath := filepath.Join(d.Config.DatabasePath, ReservedDatabaseName)
-	opts := badger.DefaultOptions(reserveDBPath)
-	opts.Logger = nil // disable the message from badger log
+	fmt.Println(pc)
 
-	db, err := tools.OpenDB(reserveDBPath, opts)
-	tools.HandleErr(err)
-	defer db.Close()
-
+	// Put the information to the database
 	err = db.Update(func(txn *badger.Txn) error {
-		_, err := txn.Get([]byte(name))
+		err := txn.Set([]byte(name), pc.Serialize())
 		if err != nil {
-			if err == badger.ErrKeyNotFound {
-				err = txn.Set([]byte(name), pc.Serialize())
-			}
 			return err
 		}
-		errMsg := fmt.Sprintf("Name: %s already reserved!", name)
-		return errors.New(errMsg)
+		return nil
 	})
 	if err != nil {
 		return err
 	}
-	return nil
 
+	return nil
 }
 
 // RegisterName sends the transaction for registering a name
-func (d *Domain) RegisterName() {}
+func (d *Domain) RegisterName(name, value string) error {
+	// Open the pre-order database to check if the domain name is pre-ordered and retrive the information of pre-ordered domain name
+	_, err := os.Stat(d.Config.DatabasePath)
+	if os.IsNotExist(err) {
+		os.MkdirAll(d.Config.DatabasePath, os.ModePerm)
+		errMsg := fmt.Sprintf("Database path %s does not exist!", d.Config.DatabasePath)
+		return errors.New(errMsg)
+	}
+	reserveDBPath := filepath.Join(d.Config.DatabasePath, ReservedDatabaseName)
+	reserveDBOpts := badger.DefaultOptions(reserveDBPath)
+	reserveDBOpts.Logger = nil // disable the message from badger log
+
+	reserveDB, err := tools.OpenDB(reserveDBPath, reserveDBOpts)
+	if err != nil {
+		return err
+	}
+	defer reserveDB.Close()
+
+	var preorderInfoByte []byte
+	err = reserveDB.Update(func(txn *badger.Txn) error {
+		item, err := txn.Get([]byte(name))
+		if err != nil {
+			if err == badger.ErrKeyNotFound {
+				errMsg := fmt.Sprintf("Name: %s hasn't been pre-ordered yet!", name)
+				return errors.New(errMsg)
+			}
+			return err
+		}
+		preorderInfoByte, err = item.ValueCopy(nil)
+		return err
+	})
+	if err != nil {
+		return err
+	}
+
+	var preorderInfo tools.PedersonCommit
+	msg := encodeRegisterJSON(preorderInfo.Deserialize(preorderInfoByte), name, value)
+	fmt.Println(msg)
+
+	txHash, err := d.Account.ZeroValueTx(msg, TagRegister)
+	if err != nil {
+		return err
+	}
+
+	// Append the information of the domain name to the badger DB of pending domain names
+	pendingDBPath := filepath.Join(d.Config.DatabasePath, PendingDatabaseName)
+	pendingDBOpts := badger.DefaultOptions(pendingDBPath)
+	pendingDBOpts.Logger = nil // disable the message from badger log
+
+	pendingDB, err := tools.OpenDB(pendingDBPath, pendingDBOpts)
+	if err != nil {
+		return err
+	}
+	defer pendingDB.Close()
+
+	pendingDomainName := tools.PendingDomainName{
+		Name:      name,
+		Value:     value,
+		RegTxHash: txHash,
+	}
+
+	err = pendingDB.Update(func(txn *badger.Txn) error {
+		_, err := txn.Get([]byte(name))
+		if err != nil {
+			if err == badger.ErrKeyNotFound {
+				err = txn.Set([]byte(name), pendingDomainName.Serialize())
+			}
+			return err
+		}
+		errMsg := fmt.Sprintf("Domain name: %s is already pending.", name)
+		return errors.New(errMsg)
+	})
+
+	return err
+}
 
 // RenewName sends the transaction for renewing a name
 func (d *Domain) RenewName() {}
@@ -110,3 +202,11 @@ func (d *Domain) TransferName() {}
 
 // RevokeName sends the transaction for recoking a name
 func (d *Domain) RevokeName() {}
+
+func encodeRegisterJSON(pc *tools.PedersonCommit, name, value string) string {
+	var res string
+	res = fmt.Sprintf("{'hash': '%s', 'g': '%s', 'h': '%s','r': '%s', 'name': '%s', 'value': '%s'}",
+		pc.TxHash, pc.G, pc.H, pc.R, name, value)
+
+	return res
+}
