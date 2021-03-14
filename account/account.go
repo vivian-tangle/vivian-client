@@ -3,6 +3,7 @@ package account
 import (
 	"fmt"
 
+	"github.com/iotaledger/iota.go/account"
 	"github.com/iotaledger/iota.go/account/builder"
 	"github.com/iotaledger/iota.go/account/store/badger"
 	"github.com/iotaledger/iota.go/account/timesrc"
@@ -13,8 +14,9 @@ import (
 
 // Account is the structure for storing the account info
 type Account struct {
-	Seed   string
-	Config *config.Config
+	Seed        string
+	IotaAccount account.Account
+	Config      *config.Config
 }
 
 func (ac *Account) Init() {

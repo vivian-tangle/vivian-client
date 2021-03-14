@@ -18,6 +18,7 @@ require (
 	github.com/multiformats/go-multiaddr v0.3.1
 	github.com/onsi/ginkgo v1.15.1 // indirect
 	github.com/onsi/gomega v1.11.0 // indirect
+	github.com/spf13/viper v1.3.2
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110 // indirect
 	golang.org/x/sys v0.0.0-20210313202042-bd2e13477e9c // indirect
