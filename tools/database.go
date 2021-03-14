@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dgraph-io/badger"
+	badger "github.com/dgraph-io/badger/v3"
 )
 
 // DBExists check if the badger DB exists
@@ -46,7 +46,7 @@ func retry(dir string, originalOpts badger.Options) (*badger.DB, error) {
 		return nil, fmt.Errorf(`removing "LOCK": %s`, err)
 	}
 	retryOpts := originalOpts
-	retryOpts.Truncate = true
+	// retryOpts.Truncate = true
 	db, err := badger.Open(retryOpts)
 
 	return db, err

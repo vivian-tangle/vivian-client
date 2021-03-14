@@ -37,7 +37,7 @@ func (ac *Account) MakeNewAddressOptions() iotaAPI.GetNewAddressOptions {
 
 // HelloWorldTx sends a "Hello World" transaction
 func (ac *Account) HelloWorldTx() {
-	
+
 	// Load configurations
 	node := ac.Config.Node
 	depth := ac.Config.Depth

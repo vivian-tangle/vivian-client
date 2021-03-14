@@ -1,11 +1,13 @@
 module github.com/vivian-tangle/vivian-client
 
-go 1.15
+go 1.13
+
+replace github.com/dgraph-io/badger => github.com/dgraph-io/badger v1.5.4
 
 require (
 	github.com/OneOfOne/xxhash v1.2.8 // indirect
 	github.com/bwesterb/go-ristretto v1.2.0
-	github.com/dgraph-io/badger v1.6.2
+	github.com/dgraph-io/badger/v3 v3.2011.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/google/go-cmp v0.5.5 // indirect
 	github.com/google/uuid v1.2.0

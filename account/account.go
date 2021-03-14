@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/iotaledger/iota.go/account/builder"
+	"github.com/iotaledger/iota.go/account/store/badger"
 	"github.com/iotaledger/iota.go/account/timesrc"
 	"github.com/iotaledger/iota.go/api"
 	"github.com/vivian-tangle/vivian-client/config"
@@ -24,11 +25,11 @@ func (ac *Account) Init() {
 	tools.HandleErr(err)
 
 	// Define a database in which to store the seed state
-	// store, err := badger.NewBadgerStore("seed-state-database")
+	store, err := badger.NewBadgerStore("seed-state-database")
 	tools.HandleErr(err)
 
 	// Make sure the database closes when the code stops
-	// defer store.Close()
+	defer store.Close()
 
 	// Use the Google NTP servers as a reliable source of time to check CDA timeouts
 	timesource := timesrc.NewNTPTimeSource("time.google.com")
@@ -37,7 +38,7 @@ func (ac *Account) Init() {
 		// Connect to a node
 		WithAPI(iotaAPI).
 		// Connect to the database
-		// WithStore(store).
+		WithStore(store).
 		// Load the seed
 		WithSeed(ac.Seed).
 		// Set the minimum weight magnitude for the Devnet (default is 14)
