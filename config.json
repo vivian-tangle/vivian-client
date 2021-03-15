@@ -2,10 +2,12 @@
     "network": "devnet",
     "seedPath": "tmp/seed",
     "databasePath": "tmp/db",
+    "addressesPath": "tmp/addresses",
     "node": "https://nodes.devnet.iota.org",
     "securityLevel": 2,
     "depth": 3,
     "minimumWeightMagnitude": 9,
+    "ntpTimeSource": "time.google.com",
     "nodeClientVersion": "go-p2p-node/0.0.1",
     "pingRequestVersion": "/ping/pingreq/0.0.1",
     "pingResponseVersion": "/ping/pingresp/0.0.1"

@@ -22,13 +22,16 @@ var (
 	DefaultDepth = 3
 	// DefaultMinimumWeightMagnitude is the default minimum magnitude of IOTA network
 	DefaultMinimumWeightMagnitude = 9
+	// DefaultNTPTimeSource is the default source for NTP time sync
+	DefaultNTPTimeSource = "time.google.com"
 	// DefaultNodeClientVersion is the default node client version for lib-p2p network
 	DefaultNodeClientVersion = "go-p2p-node/0.0.1"
 	// DefaultPingRequestVersion is the default ping request version for lib-p2p network
 	DefaultPingRequestVersion = "/ping/pingreq/0.0.1"
 	// DefaultPingResponseVersion is the default ping response version for lip-p2p network
 	DefaultPingResponseVersion = "/ping/pingresp/0.0.1"
-	configDir                  = "config.json"
+
+	configDir = "config.json"
 )
 
 // Config is the struct for storing config parameters
@@ -40,6 +43,7 @@ type Config struct {
 	SecurityLevel          int
 	Depth                  uint64
 	MinimumWeightMagnitude uint64
+	NTPTimeSource          string
 	NodeClientVersion      string
 	PingRequestVersion     string
 	PingResponseVersion    string
@@ -58,6 +62,7 @@ func (c *Config) LoadConfig() {
 	viper.SetDefault("securityLevel", DefaultSecurityLevel)
 	viper.SetDefault("depth", DefaultDepth)
 	viper.SetDefault("minimumWeightMagnitude", DefaultMinimumWeightMagnitude)
+	viper.SetDefault("ntpTimeSource", DefaultNTPTimeSource)
 	viper.SetDefault("nodeClientVersion", DefaultNodeClientVersion)
 	viper.SetDefault("pingRequestVersion", DefaultPingRequestVersion)
 	viper.SetDefault("pingResponseVersion", DefaultPingResponseVersion)

@@ -10,31 +10,6 @@ import (
 	"github.com/vivian-tangle/vivian-client/tools"
 )
 
-// GetNewAddress generates a new address based on the seed
-func (ac *Account) GetNewAddress(api *iotaAPI.API) []string {
-	// Generate an unspent address with the security level
-	// If this address is spent, this method returns the next unspent address with the lowest index
-	address, err := api.GetNewAddress(ac.Seed, ac.MakeNewAddressOptions())
-	tools.HandleErr(err)
-
-	return address
-}
-
-// MakeNewAddressOptions generates GetNewAddressOptions struct by security level
-func (ac *Account) MakeNewAddressOptions() iotaAPI.GetNewAddressOptions {
-	var newAddressOption iotaAPI.GetNewAddressOptions
-	switch sl := ac.Config.SecurityLevel; sl {
-	case 1:
-		newAddressOption = iotaAPI.GetNewAddressOptions{Security: 1}
-	case 2:
-		newAddressOption = iotaAPI.GetNewAddressOptions{Security: 2}
-	case 3:
-		newAddressOption = iotaAPI.GetNewAddressOptions{Security: 3}
-	}
-
-	return newAddressOption
-}
-
 // HelloWorldTx sends a "Hello World" transaction
 func (ac *Account) HelloWorldTx() {
 
@@ -47,15 +22,17 @@ func (ac *Account) HelloWorldTx() {
 	api, err := iotaAPI.ComposeAPI(iotaAPI.HTTPClientSettings{URI: node})
 	tools.HandleErr(err)
 
-	address := ac.GetNewAddress(api)
+	address, err := ac.GetNewAddressLocal()
+	tools.HandleErr(err)
 	var data = "{'message' : 'Hello world'}"
 	tag, err := converter.ASCIIToTrytes("HELLO")
+	tools.HandleErr(err)
 	message, err := converter.ASCIIToTrytes(data)
 	tools.HandleErr(err)
 
 	transfers := bundle.Transfers{
 		{
-			Address: address[0],
+			Address: address,
 			Value:   0,
 			Tag:     tag,
 			Message: message,
@@ -84,7 +61,8 @@ func (ac *Account) ZeroValueTx(message, tag string) (string, error) {
 		return "", err
 	}
 
-	address := ac.GetNewAddress(api)
+	address, err := ac.GetNewAddressLocal()
+	tools.HandleErr(err)
 	messageTrytes, err := converter.ASCIIToTrytes(message)
 	if err != nil {
 		return "", err
@@ -96,7 +74,7 @@ func (ac *Account) ZeroValueTx(message, tag string) (string, error) {
 
 	transfers := bundle.Transfers{
 		{
-			Address: address[0],
+			Address: address,
 			Value:   0,
 			Tag:     tagTrytes,
 			Message: messageTrytes,

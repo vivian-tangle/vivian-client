@@ -3,18 +3,23 @@ package main
 import (
 	"fmt"
 
+	iotaAPI "github.com/iotaledger/iota.go/api"
 	"github.com/vivian-tangle/vivian-client/account"
 	"github.com/vivian-tangle/vivian-client/config"
+	"github.com/vivian-tangle/vivian-client/tools"
 )
 
 func main() {
 	fmt.Println("Hello world!")
 	c := config.Config{}
 	c.LoadConfig()
-	// n := network.Network{Config: &c}
-	ac := account.Account{Seed: "", Config: &c}
+	// // n := network.Network{Config: &c}
+	ac := account.Account{Config: &c}
 	ac.GetSeed()
-	ac.Init()
+	// ac.Init()
+	api, err := iotaAPI.ComposeAPI(iotaAPI.HTTPClientSettings{URI: c.Node})
+	fmt.Println(ac.GetNewAddressFromAPI(api))
+	tools.HandleErr(err)
 	ac.HelloWorldTx()
 	// ac.ZeroValueTx("Hello world", domain.TagPreorder)
 	// ac.ReadTxTagMsg("LGKZQJGPLRGRQQAQTVIWSRNBBUWNQBHGGCHQJNRPVPNBWXQXGFPSFMJKKFTIQCARNDEJI9FGDGSWVA999")
