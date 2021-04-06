@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/dgraph-io/badger"
+	badger "github.com/dgraph-io/badger/v3"
 	"github.com/vivian-tangle/vivian-client/account"
 	"github.com/vivian-tangle/vivian-client/config"
 )
